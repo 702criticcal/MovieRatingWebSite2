@@ -1,129 +1,151 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="java.io.PrintWriter"%>
 <!doctype html>
 
 <html>
 
-  <head>
+<head>
 
-    <title>온라인 동물보호센터</title>
+<title>온라인 동물보호센터</title>
 
-    <meta charset="utf-8">
+<meta charset="utf-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- 부트스트랩 CSS 추가하기 -->
+<!-- 부트스트랩 CSS 추가하기 -->
 
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
+<link rel="stylesheet" href="./css/bootstrap.min.css">
 
-    <!-- 커스텀 CSS 추가하기 -->
+<!-- 커스텀 CSS 추가하기 -->
 
-    <link rel="stylesheet" href="./css/custom.css">
+<link rel="stylesheet" href="./css/custom.css">
 
-  </head>
+</head>
 
-  <body>
+<body>
+	<%
+		String userID = null;
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+	if (session.getAttribute("userID") != null) {
 
-      <a class="navbar-brand" href="index.jsp">온라인 동물보호센터</a>
+		userID = (String) session.getAttribute("userID");
 
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+	}
 
-        <span class="navbar-toggler-icon"></span>
+	if (userID != null) {
 
-      </button>
+		PrintWriter script = response.getWriter();
 
-      <div class="collapse navbar-collapse" id="navbar">
+		script.println("<script>");
 
-        <ul class="navbar-nav mr-auto">
+		script.println("alert('로그인이 된 상태입니다.');");
 
-          <li class="nav-item active">
+		script.println("location.href = 'index.jsp'");
 
-            <a class="nav-link" href="index.jsp">Main</a>
+		script.println("</script>");
 
-          </li>
+		script.close();
 
-          <li class="nav-item dropdown">
+	}
+	%>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-            <a class="nav-link dropdown-toggle" id="dropdown" data-toggle="dropdown">
+		<a class="navbar-brand" href="index.jsp">온라인 동물보호센터</a>
 
-              회원 관리
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbar">
 
-            </a>
+			<span class="navbar-toggler-icon"></span>
 
-            <div class="dropdown-menu" aria-labelledby="dropdown">
+		</button>
 
-              <a class="dropdown-item" href="userLogin.jsp">로그인</a>
+		<div class="collapse navbar-collapse" id="navbar">
 
-              <a class="dropdown-item" href="userRegister.jsp">회원가입</a>
+			<ul class="navbar-nav mr-auto">
 
-              <a class="dropdown-item" href="userLogout.jsp">로그아웃</a>
+				<li class="nav-item active"><a class="nav-link"
+					href="index.jsp">Main</a></li>
 
-            </div>
+				<li class="nav-item dropdown"><a
+					class="nav-link dropdown-toggle" id="dropdown"
+					data-toggle="dropdown"> 회원 관리 </a>
 
-          </li>
+					<div class="dropdown-menu" aria-labelledby="dropdown">
+						<%
+							if (userID == null) {
+						%>
+						<a class="dropdown-item" href="userLogin.jsp">로그인</a>
+						<a class="dropdown-item" href="userRegister.jsp">회원가입</a>
+						<%
+							} else {
+						%>
+						<a class="dropdown-item" href="userLogout.jsp">로그아웃</a>
+						<%
+							}
+						%>
+					</div>
+				</li>
+			</ul>
 
-        </ul>
+			<form action="./index.jsp" method="get"
+				class="form-inline my-2 my-lg-0">
 
-        <form action="./index.jsp" method="get" class="form-inline my-2 my-lg-0">
+				<input type="text" name="search" class="form-control mr-sm-2"
+					placeholder="내용을 입력하세요.">
 
-          <input type="text" name="search" class="form-control mr-sm-2" placeholder="내용을 입력하세요.">
+				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">검색</button>
 
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">검색</button>
+			</form>
 
-        </form>
+		</div>
 
-      </div>
+	</nav>
 
-    </nav>
+	<div class="container mt-3" style="max-width: 560px;">
 
-    <div class="container mt-3" style="max-width: 560px;">
+		<form method="post" action="./userRegisterAction.jsp">
 
-      <form method="post" action="./userRegisterAction.jsp">
+			<div class="form-group">
 
-        <div class="form-group">
+				<label>ID</label> <input type="text" name="userID"
+					class="form-control">
 
-          <label>ID</label>
+			</div>
 
-          <input type="text" name="userID" class="form-control">
+			<div class="form-group">
 
-        </div>
+				<label>PASSWORD</label> <input type="password" name="userPassword"
+					class="form-control">
 
-        <div class="form-group">
+			</div>
 
-          <label>PASSWORD</label>
+			<div class="form-group">
 
-          <input type="password" name="userPassword" class="form-control">
+				<label>E-Mail</label> <input type="email" name="userEmail"
+					class="form-control">
 
-        </div>
+			</div>
 
-        <div class="form-group">
+			<button type="submit" class="btn btn-primary">회원가입</button>
 
-          <label>E-Mail</label>
+		</form>
 
-          <input type="email" name="userEmail" class="form-control">
+	</div>
 
-        </div>
+	<!-- 제이쿼리 자바스크립트 추가하기 -->
 
-        <button type="submit" class="btn btn-primary">회원가입</button>
+	<script src="./js/jquery.min.js"></script>
 
-      </form>
+	<!-- Popper 자바스크립트 추가하기 -->
 
-    </div>
+	<script src="./js/popper.min.js"></script>
 
-    <!-- 제이쿼리 자바스크립트 추가하기 -->
+	<!-- 부트스트랩 자바스크립트 추가하기 -->
 
-    <script src="./js/jquery.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
 
-    <!-- Popper 자바스크립트 추가하기 -->
-
-    <script src="./js/popper.min.js"></script>
-
-    <!-- 부트스트랩 자바스크립트 추가하기 -->
-
-    <script src="./js/bootstrap.min.js"></script>
-
-  </body>
+</body>
 
 </html>

@@ -1,404 +1,453 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="java.io.PrintWriter"%>
+<%@ page import="user.UserDAO"%>
 
 <!doctype html>
 
 <html>
 
-  <head>
+<head>
 
-    <title>온라인 동물보호센터</title>
+<title>온라인 동물보호센터</title>
 
-    <meta charset="utf-8">
+<meta charset="utf-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- 부트스트랩 CSS 추가하기 -->
+<!-- 부트스트랩 CSS 추가하기 -->
 
-    <link rel="stylesheet" href="./css/bootstrap.min.css">
+<link rel="stylesheet" href="./css/bootstrap.min.css">
 
-    <!-- 커스텀 CSS 추가하기 -->
+<!-- 커스텀 CSS 추가하기 -->
 
-    <link rel="stylesheet" href="./css/custom.css">
+<link rel="stylesheet" href="./css/custom.css">
 
-  </head>
+</head>
 
-  <body>
+<body>
+	<%
+		String userID = null;
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+	if (session.getAttribute("userID") != null) {
 
-      <a class="navbar-brand" href="index.jsp">온라인 동물보호센터</a>
+		userID = (String) session.getAttribute("userID");
 
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+	}
 
-        <span class="navbar-toggler-icon"></span>
+	if (userID == null) {
 
-      </button>
+		PrintWriter script = response.getWriter();
 
-      <div class="collapse navbar-collapse" id="navbar">
+		script.println("<script>");
 
-        <ul class="navbar-nav mr-auto">
+		script.println("alert('로그인을 해주세요.');");
 
-          <li class="nav-item active">
+		script.println("location.href = 'userLogin.jsp'");
 
-            <a class="nav-link" href="index.jsp">Main</a>
+		script.println("</script>");
 
-          </li>
+		script.close();
 
-          <li class="nav-item dropdown">
+	}
 
-            <a class="nav-link dropdown-toggle" id="dropdown" data-toggle="dropdown">
+	boolean emailChecked = new UserDAO().getUserEmailChecked(userID);
 
-              회원 관리
+	if (emailChecked == false) {
 
-            </a>
+		PrintWriter script = response.getWriter();
 
-            <div class="dropdown-menu" aria-labelledby="dropdown">
+		script.println("<script>");
 
-              <a class="dropdown-item" href="userLogin.jsp">로그인</a>
+		script.println("location.href = 'emailSendConfirm.jsp'");
 
-              <a class="dropdown-item" href="userRegister.jsp">회원가입</a>
+		script.println("</script>");
 
-              <a class="dropdown-item" href="userLogout.jsp">로그아웃</a>
+		script.close();
 
-            </div>
+		return;
 
-          </li>
+	}
+	%>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-        </ul>
+		<a class="navbar-brand" href="index.jsp">온라인 동물보호센터</a>
 
-        <form action="./index.jsp" method="get" class="form-inline my-2 my-lg-0">
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbar">
 
-          <input type="text" name="search" class="form-control mr-sm-2" placeholder="내용을 입력하세요.">
+			<span class="navbar-toggler-icon"></span>
 
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">검색</button>
+		</button>
 
-        </form>
+		<div class="collapse navbar-collapse" id="navbar">
 
-      </div>
+			<ul class="navbar-nav mr-auto">
 
-    </nav>
+				<li class="nav-item active"><a class="nav-link"
+					href="index.jsp">Main</a></li>
 
-    <div class="container">
+				<li class="nav-item dropdown"><a
+					class="nav-link dropdown-toggle" id="dropdown"
+					data-toggle="dropdown"> 회원 관리 </a>
 
-      <form method="get" action="./index.jsp" class="form-inline mt-3">
+					<div class="dropdown-menu" aria-labelledby="dropdown">
+						<%
+							if (userID == null) {
+						%>
+						<a class="dropdown-item" href="userLogin.jsp">로그인</a>
+						<a class="dropdown-item" href="userRegister.jsp">회원가입</a>
+						<%
+							} else {
+						%>
+						<a class="dropdown-item" href="userLogout.jsp">로그아웃</a>
+						<%
+							}
+						%>
+					</div>
+				</li>
+			</ul>
 
-        <select name="lectureDivide" class="form-control mx-1 mt-2">
+			<form action="./index.jsp" method="get"
+				class="form-inline my-2 my-lg-0">
 
-          <option value="전체">전체</option>
+				<input type="text" name="search" class="form-control mr-sm-2"
+					placeholder="내용을 입력하세요.">
 
-          <option value="봉사">봉사</option>
+				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">검색</button>
 
-          <option value="후원">후원</option>
+			</form>
 
-          <option value="기타">기타</option>
+		</div>
 
-        </select>
+	</nav>
 
-        <input type="text" name="search" class="form-control mx-1 mt-2" placeholder="내용을 입력하세요.">
+	<div class="container">
 
-        <button type="submit" class="btn btn-primary mx-1 mt-2">검색</button>
+		<form method="get" action="./index.jsp" class="form-inline mt-3">
 
-        <a class="btn btn-primary mx-1 mt-2" data-toggle="modal" href="#registerModal">등록하기</a>
+			<select name="lectureDivide" class="form-control mx-1 mt-2">
 
-        <a class="btn btn-danger ml-1 mt-2" data-toggle="modal" href="#reportModal">신고</a>
+				<option value="전체">전체</option>
 
-      </form>
+				<option value="봉사">봉사</option>
 
-      <div class="card bg-light mt-3">
+				<option value="후원">후원</option>
 
-        <div class="card-header bg-light">
+				<option value="기타">기타</option>
 
-          <div class="row">
+			</select> <input type="text" name="search" class="form-control mx-1 mt-2"
+				placeholder="내용을 입력하세요.">
 
-            <div class="col-8 text-left">꾸꾸 후원하기&nbsp;<small>신준수</small></div>
+			<button type="submit" class="btn btn-primary mx-1 mt-2">검색</button>
 
-          </div>
+			<a class="btn btn-primary mx-1 mt-2" data-toggle="modal"
+				href="#registerModal">등록하기</a> <a class="btn btn-danger ml-1 mt-2"
+				data-toggle="modal" href="#reportModal">신고</a>
 
-        </div>
+		</form>
 
-        <div class="card-body">
+		<div class="card bg-light mt-3">
 
-          <h5 class="card-title">
+			<div class="card-header bg-light">
 
-            우리 꾸꾸에게 후원해주세요.&nbsp;<small>(말티즈, 여, 3세)</small>
+				<div class="row">
 
-          </h5>
+					<div class="col-8 text-left">
+						꾸꾸 후원하기&nbsp;<small>신준수</small>
+					</div>
 
-          <p class="card-text">추운 겨울을 보낼 꾸꾸에게 따뜻한 옷을 마련해주세요.</p>
+				</div>
 
-          <div class="row">
+			</div>
 
-            <div class="col-9 text-left">
+			<div class="card-body">
 
-              <span style="color: green;">(추천: 15★)</span>
+				<h5 class="card-title">
 
-            </div>
+					우리 꾸꾸에게 후원해주세요.&nbsp;<small>(말티즈, 여, 3세)</small>
 
-            <div class="col-3 text-right">
+				</h5>
 
-              <a onclick="return confirm('추천하시겠습니까?')" href="./likeAction.jsp?evaluationID=">추천</a>
+				<p class="card-text">추운 겨울을 보낼 꾸꾸에게 따뜻한 옷을 마련해주세요.</p>
 
-              <a onclick="return confirm('삭제하시겠습니까?')" href="./deleteAction.jsp?evaluationID=">삭제</a>
+				<div class="row">
 
-            </div>
+					<div class="col-9 text-left">
 
-          </div>
+						<span style="color: green;">(추천: 15★)</span>
 
-        </div>
+					</div>
 
-      </div>
+					<div class="col-3 text-right">
 
-      <div class="card bg-light mt-3">
+						<a onclick="return confirm('추천하시겠습니까?')"
+							href="./likeAction.jsp?evaluationID=">추천</a> <a
+							onclick="return confirm('삭제하시겠습니까?')"
+							href="./deleteAction.jsp?evaluationID=">삭제</a>
 
-        <div class="card-header bg-light">
+					</div>
 
-          <div class="row">
+				</div>
 
-            <div class="col-8 text-left">서울 동물보호소 봉사하기&nbsp;<small>홍길동</small></div>
+			</div>
 
-          </div>
+		</div>
 
-        </div>
+		<div class="card bg-light mt-3">
 
-        <div class="card-body">
+			<div class="card-header bg-light">
 
-          <h5 class="card-title">
+				<div class="row">
 
-            12월 1일 서울 동물보호소에 봉사하러 가실 분을 모집합니다.&nbsp;<small></small>
+					<div class="col-8 text-left">
+						서울 동물보호소 봉사하기&nbsp;<small>홍길동</small>
+					</div>
 
-          </h5>
+				</div>
 
-          <p class="card-text">12월 1일 서울 동물보호소에 봉사하러 가실 분을 모집합니다.</p>
+			</div>
 
-          <div class="row">
+			<div class="card-body">
 
-            <div class="col-9 text-left">
+				<h5 class="card-title">
 
-              <span style="color: green;">(추천: 1)</span>
+					12월 1일 서울 동물보호소에 봉사하러 가실 분을 모집합니다.&nbsp;<small></small>
 
-            </div>
+				</h5>
 
-            <div class="col-3 text-right">
+				<p class="card-text">12월 1일 서울 동물보호소에 봉사하러 가실 분을 모집합니다.</p>
 
-              <a onclick="return confirm('추천하시겠습니까?')" href="./likeAction.jsp?evaluationID=">추천</a>
+				<div class="row">
 
-              <a onclick="return confirm('삭제하시겠습니까?')" href="./deleteAction.jsp?evaluationID=">삭제</a>
+					<div class="col-9 text-left">
 
-            </div>
+						<span style="color: green;">(추천: 1)</span>
 
-          </div>
+					</div>
 
-        </div>
+					<div class="col-3 text-right">
 
-      </div>
+						<a onclick="return confirm('추천하시겠습니까?')"
+							href="./likeAction.jsp?evaluationID=">추천</a> <a
+							onclick="return confirm('삭제하시겠습니까?')"
+							href="./deleteAction.jsp?evaluationID=">삭제</a>
 
-      <div class="card bg-light mt-3">
+					</div>
 
-        <div class="card-header bg-light">
+				</div>
 
-          <div class="row">
+			</div>
 
-            <div class="col-8 text-left">오송 동물보호소 봉사하기&nbsp;<small>홍홍홍</small></div>
+		</div>
 
-          </div>
+		<div class="card bg-light mt-3">
 
-        </div>
+			<div class="card-header bg-light">
 
-        <div class="card-body">
+				<div class="row">
 
-          <h5 class="card-title">
+					<div class="col-8 text-left">
+						오송 동물보호소 봉사하기&nbsp;<small>홍홍홍</small>
+					</div>
 
-            12월 10일 오송 동물보호소에 봉사하러 가실 분을 모집합니다.&nbsp;<small></small>
+				</div>
 
-          </h5>
+			</div>
 
-          <p class="card-text">12월 10일 오송 동물보호소에 봉사하러 가실 분을 모집합니다.</p>
+			<div class="card-body">
 
-          <div class="row">
+				<h5 class="card-title">
 
-            <div class="col-9 text-left">
+					12월 10일 오송 동물보호소에 봉사하러 가실 분을 모집합니다.&nbsp;<small></small>
 
-              <span style="color: green;">(추천: 0)</span>
+				</h5>
 
-            </div>
+				<p class="card-text">12월 10일 오송 동물보호소에 봉사하러 가실 분을 모집합니다.</p>
 
-            <div class="col-3 text-right">
+				<div class="row">
 
-              <a onclick="return confirm('추천하시겠습니까?')" href="./likeAction.jsp?evaluationID=">추천</a>
+					<div class="col-9 text-left">
 
-              <a onclick="return confirm('삭제하시겠습니까?')" href="./deleteAction.jsp?evaluationID=">삭제</a>
+						<span style="color: green;">(추천: 0)</span>
 
-            </div>
+					</div>
 
-          </div>
+					<div class="col-3 text-right">
 
-        </div>
+						<a onclick="return confirm('추천하시겠습니까?')"
+							href="./likeAction.jsp?evaluationID=">추천</a> <a
+							onclick="return confirm('삭제하시겠습니까?')"
+							href="./deleteAction.jsp?evaluationID=">삭제</a>
 
-      </div>
+					</div>
 
-    </div>
+				</div>
 
-    <ul class="pagination justify-content-center mt-3">
+			</div>
 
-      <li class="page-item">
+		</div>
 
-        <a class="page-link" href="#">이전</a>
+	</div>
 
-      </li>
+	<ul class="pagination justify-content-center mt-3">
 
-      <li class="page-item">
+		<li class="page-item"><a class="page-link" href="#">이전</a></li>
 
-        <a class="page-link" href="#">다음</a>
+		<li class="page-item"><a class="page-link" href="#">다음</a></li>
 
-      </li>
+	</ul>
 
-    </ul>
+	<div class="modal fade" id="registerModal" tabindex="-1" role="dialog"
+		aria-labelledby="modal" aria-hidden="true">
 
-    <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+		<div class="modal-dialog">
 
-      <div class="modal-dialog">
+			<div class="modal-content">
 
-        <div class="modal-content">
+				<div class="modal-header">
 
-          <div class="modal-header">
+					<h5 class="modal-title" id="modal">게시글 등록</h5>
 
-            <h5 class="modal-title" id="modal">게시글 등록</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
 
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
 
-              <span aria-hidden="true">&times;</span>
+					</button>
 
-            </button>
+				</div>
 
-          </div>
+				<div class="modal-body">
 
-          <div class="modal-body">
+					<form action="./evaluationRegisterAction.jsp" method="post">
 
-            <form action="./evaluationRegisterAction.jsp" method="post">
+						<div class="form-row">
 
-              <div class="form-row">
+							<div class="form-group col-sm-6">
 
-                <div class="form-group col-sm-6">
+								<label>분류</label> <input type="text" name="lectureName"
+									class="form-control" maxlength="20">
 
-                  <label>분류</label>
+							</div>
 
-                  <input type="text" name="lectureName" class="form-control" maxlength="20">
+							<div class="form-group col-sm-6">
 
-                </div>
+								<label>작성자명</label> <input type="text" name="professorName"
+									class="form-control" maxlength="20">
 
-                <div class="form-group col-sm-6">
+							</div>
 
-                  <label>작성자명</label>
+						</div>
 
-                  <input type="text" name="professorName" class="form-control" maxlength="20">
+						<div class="form-group">
 
-                </div>
+							<label>제목</label> <input type="text" name="evaluationTitle"
+								class="form-control" maxlength="20">
 
-              </div>
+						</div>
 
-              <div class="form-group">
+						<div class="form-group">
 
-                <label>제목</label>
+							<label>내용</label>
 
-                <input type="text" name="evaluationTitle" class="form-control" maxlength="20">
+							<textarea type="text" name="evaluationContent"
+								class="form-control" maxlength="2048" style="height: 180px;"></textarea>
 
-              </div>
+						</div>
 
-              <div class="form-group">
+						<div class="modal-footer">
 
-                <label>내용</label>
+							<button type="button" class="btn btn-secondary"
+								data-dismiss="modal">취소</button>
 
-                <textarea type="text" name="evaluationContent" class="form-control" maxlength="2048" style="height: 180px;"></textarea>
+							<button type="submit" class="btn btn-primary">등록하기</button>
 
-              </div>
+						</div>
 
-              <div class="modal-footer">
+					</form>
 
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+				</div>
 
-                <button type="submit" class="btn btn-primary">등록하기</button>
+			</div>
 
-              </div>
+		</div>
 
-            </form>
+	</div>
 
-          </div>
+	<div class="modal fade" id="reportModal" tabindex="-1" role="dialog"
+		aria-labelledby="modal" aria-hidden="true">
 
-        </div>
+		<div class="modal-dialog">
 
-      </div>
+			<div class="modal-content">
 
-    </div>
+				<div class="modal-header">
 
-    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+					<h5 class="modal-title" id="modal">신고하기</h5>
 
-      <div class="modal-dialog">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
 
-        <div class="modal-content">
+						<span aria-hidden="true">&times;</span>
 
-          <div class="modal-header">
+					</button>
 
-            <h5 class="modal-title" id="modal">신고하기</h5>
+				</div>
 
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<div class="modal-body">
 
-              <span aria-hidden="true">&times;</span>
+					<form method="post" action="./reportAction.jsp">
 
-            </button>
+						<div class="form-group">
 
-          </div>
+							<label>신고 제목</label> <input type="text" name="reportTitle"
+								class="form-control" maxlength="20">
 
-          <div class="modal-body">
+						</div>
 
-            <form method="post" action="./reportAction.jsp">
+						<div class="form-group">
 
-              <div class="form-group">
+							<label>신고 내용</label>
 
-                <label>신고 제목</label>
+							<textarea type="text" name="reportContent" class="form-control"
+								maxlength="2048" style="height: 180px;"></textarea>
 
-                <input type="text" name="reportTitle" class="form-control" maxlength="20">
+						</div>
 
-              </div>
+						<div class="modal-footer">
 
-              <div class="form-group">
+							<button type="button" class="btn btn-secondary"
+								data-dismiss="modal">취소</button>
 
-                <label>신고 내용</label>
+							<button type="submit" class="btn btn-danger">신고하기</button>
 
-                <textarea type="text" name="reportContent" class="form-control" maxlength="2048" style="height: 180px;"></textarea>
+						</div>
 
-              </div>
+					</form>
 
-              <div class="modal-footer">
+				</div>
 
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+			</div>
 
-                <button type="submit" class="btn btn-danger">신고하기</button>
+		</div>
 
-              </div>
+	</div>
 
-            </form>
 
-          </div>
+	<!-- 제이쿼리 자바스크립트 추가하기 -->
 
-        </div>
+	<script src="./js/jquery.min.js"></script>
 
-      </div>
+	<!-- Popper 자바스크립트 추가하기 -->
 
-    </div>
+	<script src="./js/popper.min.js"></script>
 
+	<!-- 부트스트랩 자바스크립트 추가하기 -->
 
-    <!-- 제이쿼리 자바스크립트 추가하기 -->
+	<script src="./js/bootstrap.min.js"></script>
 
-    <script src="./js/jquery.min.js"></script>
-
-    <!-- Popper 자바스크립트 추가하기 -->
-
-    <script src="./js/popper.min.js"></script>
-
-    <!-- 부트스트랩 자바스크립트 추가하기 -->
-
-    <script src="./js/bootstrap.min.js"></script>
-
-  </body>
+</body>
 
 </html>
